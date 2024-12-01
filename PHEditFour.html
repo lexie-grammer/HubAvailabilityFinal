@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role & Availability Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        .output {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check Role & Availability</h1>
+        
+        <!-- Step 1: Role Selection -->
+        <div id="roleSelection">
+            <h2>Select Your Role</h2>
+            <label>
+                <input type="radio" name="role" value="Professor"> Professor
+            </label><br>
+            <label>
+                <input type="radio" name="role" value="Student"> Student
+            </label><br><br>
+            <button onclick="checkRole()">Next</button>
+        </div>
+
+        <!-- Step 2A: Professor Identity Selection (hidden initially) -->
+        <div id="professorSelection" style="display:none;">
+            <h2>Select Who You Are</h2>
+            <label>
+                <input type="radio" name="professor" value="Dr. Brown"> Dr. Brown
+            </label><br>
+            <label>
+                <input type="radio" name="professor" value="Dr. Pittenger"> Dr. Pittenger
+            </label><br>
+            <label>
+                <input type="radio" name="professor" value="Professor 3"> Professor 3
+            </label><br><br>
+            <button onclick="confirmProfessor()">Next</button>
+        </div>
+
+        <!-- Step 2B: Student - Select Professor to See (hidden initially) -->
+        <div id="studentProfessorSelection" style="display:none;">
+            <h2>Select Professor to See</h2>
+            <label>
+                <input type="radio" name="studentProfessor" value="Dr. Brown"> Dr. Brown
+            </label><br>
+            <label>
+                <input type="radio" name="studentProfessor" value="Dr. Pittenger"> Dr. Pittenger
+            </label><br>
+            <label>
+                <input type="radio" name="studentProfessor" value="Professor 3"> Professor 3
+            </label><br><br>
+            <button onclick="showProfessorAvailability()">View Availability</button>
+        </div>
+
+        <!-- Step 3: Availability Selection (hidden initially) -->
+        <div id="availabilitySelection" style="display:none;">
+            <h2>Select Availability</h2>
+            <label>
+                <input type="radio" name="availability" value="Available"> Available
+            </label><br>
+            <label>
+                <input type="radio" name="availability" value="Almost Available"> Almost Available
+            </label><br>
+            <label>
+                <input type="radio" name="availability" value="Unavailable"> Unavailable
+            </label><br><br>
+            <button onclick="submitAvailability()">Submit</button>
+        </div>
+
+        <!-- Output Message -->
+        <div id="output" class="output"></div>
+    </div>
+
+    <script>
+        // Object to store the most recent availability input for each professor
+        const professorLastInput = {
+            "Dr. Brown": "No recent input",
+            "Dr. Pittenger": "No recent input",
+            "Professor 3": "No recent input"
+        };
+
+        function checkRole() {
+            const role = document.querySelector('input[name="role"]:checked');
+            
+            if (role) {
+                if (role.value === "Professor") {
+                    document.getElementById('roleSelection').style.display = 'none';
+                    document.getElementById('professorSelection').style.display = 'block';
+                } else if (role.value === "Student") {
+                    document.getElementById('roleSelection').style.display = 'none';
+                    document.getElementById('studentProfessorSelection').style.display = 'block';
+                }
+            } else {
+                alert("Please select a role.");
+            }
+        }
+
+        function confirmProfessor() {
+            const professor = document.querySelector('input[name="professor"]:checked');
+            
+            if (professor) {
+                document.getElementById('professorSelection').style.display = 'none';
+                document.getElementById('availabilitySelection').style.display = 'block';
+            } else {
+                alert("Please select who you are.");
+            }
+        }
+
+        function submitAvailability() {
+            const professor = document.querySelector('input[name="professor"]:checked').value;
+            const availability = document.querySelector('input[name="availability"]:checked');
+            
+            if (availability) {
+                // Store the availability input as the most recent input for this professor
+                professorLastInput[professor] = availability.value;
+                document.getElementById('output').innerText = `${professor}'s Availability: ${availability.value}`;
+            } else {
+                alert("Please select an availability option.");
+            }
+        }
+
+        function showProfessorAvailability() {
+            const studentProfessor = document.querySelector('input[name="studentProfessor"]:checked');
+
+            if (studentProfessor) {
+                const selectedProfessor = studentProfessor.value;
+                // Display the most recent input from the selected professor
+                document.getElementById('output').innerText = `${selectedProfessor}'s Most Recent Input: ${professorLastInput[selectedProfessor]}`;
+            } else {
+                alert("Please select a professor to see.");
+            }
+        }
+    </script>
+</body>
+</html>
